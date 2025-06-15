@@ -20,11 +20,15 @@ WORKDIR /custom-file
 RUN date +%s > /tmp/build_timestamp_custom.txt && \
     git clone --depth 1 https://github.com/timigogo/new-api-edit-channel.git .
 
-# Replace the EditChannel.js file
+# Replace the EditChannel.js file and its dependencies
 # Use WORKDIR to ensure correct paths
 WORKDIR /app
 RUN cp /custom-file/EditChannel.js ./web/src/pages/Channel/EditChannel.js && \
-    echo "EditChannel.js replaced successfully."
+    echo "EditChannel.js replaced successfully." && \
+    # Create the components directory if it doesn't exist and copy the dependency
+    mkdir -p ./web/src/components && \
+    cp /custom-file/utils.js ./web/src/components/utils.js && \
+    echo "Custom utils.js copied successfully."
 
 
 # Stage 1: Frontend Builder - Build the web UI using bun
