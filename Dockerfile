@@ -13,22 +13,9 @@ WORKDIR /app
 RUN date +%s > /tmp/build_timestamp.txt && \
     git clone --depth 1 https://github.com/QuantumNous/new-api.git .
 
-# Clone the repository containing the custom EditChannel.js
-WORKDIR /custom-file
-# Add date command output to a file to bust cache *before* cloning
-# Using a different temp file name just in case, though likely not needed
-RUN date +%s > /tmp/build_timestamp_custom.txt && \
-    git clone --depth 1 https://github.com/timigogo/new-api-edit-channel.git .
-
-# Replace the EditChannel.js file
-# Use WORKDIR to ensure correct paths
-WORKDIR /app
-RUN cp /custom-file/EditChannel.js ./web/src/pages/Channel/EditChannel.js && \
-    echo "EditChannel.js replaced successfully."
-
-# Replace EditChannel.js with the local version from the build context
+# Copy the custom EditChannel.js from the local build context
 COPY EditChannel.js ./web/src/pages/Channel/EditChannel.js
-
+RUN echo "EditChannel.js copied from local context successfully."
 
 # Stage 1: Frontend Builder - Build the web UI using bun
 FROM oven/bun:latest AS frontend-builder
@@ -94,4 +81,4 @@ EXPOSE 3000
 WORKDIR /data
 
 # Define the entry point for the container
-ENTRYPOINT ["/one-api"]
+ENTRYPOINT ["/one-api"] 
